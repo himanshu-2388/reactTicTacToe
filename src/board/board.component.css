@@ -1,0 +1,10 @@
+.board {
+    display: flex;
+    justify-content: center;
+}
+
+.fun-board {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
