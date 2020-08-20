@@ -1,22 +1,33 @@
 import React from 'react';
 import './board.component.css';
 import Square from '../square/square.component';
+import Axios from 'axios';
+import { JsonSampleResponse } from '../component-one/component-one.interface';
 
 class Board extends React.Component<{}, SquareStateData> {
+    private apiResponseData: Array<JsonSampleResponse> = [];
     constructor(props: any) {
         super(props);
         this.state = {
             squareValue: Array(9).fill(null),
-            xIsNext: true
+            xIsNext: true,
+            data: this.apiResponseData
         };
 
     }
+    componentDidMount() {
+        const url = "https://jsonplaceholder.typicode.com/todos";
+        Axios.get(url).then((response: any) => {
+            response.data.map((values: JsonSampleResponse) => {
+                this.apiResponseData.push(values);
+            });
+            this.setState({
+                data: this.apiResponseData,
+            })
+        });
+    }
+
     render() {
-        const board = {
-            row1: [1,2,3],
-            row2: [1,2,3],
-            row3: [1,2,3],
-        }
         return (
             <div>
                 <div className="board">
@@ -40,13 +51,15 @@ class Board extends React.Component<{}, SquareStateData> {
                     {this.renderFuntionCompSquare(11)}
                     {this.renderFuntionCompSquare(12)}
                 </div>
+                <div>
+                    {this.renderResponse()}
+                </div>
             </div>
         )
     }
 
     handleClick(clickIndex: any) {
         const squares = this.state.squareValue.slice();
-        console.log(squares[clickIndex]);
         if (!squares[clickIndex]) {
             squares[clickIndex] = this.state.xIsNext ? 'X' : 'O';
             this.setState(
@@ -56,6 +69,20 @@ class Board extends React.Component<{}, SquareStateData> {
                 }
             );
         }
+    }
+
+    renderResponse() {
+        const renderData = this.state.data;
+        const renderContent = <ul>
+                {renderData && renderData.map( (values:any) => {
+                    return (
+                            <li key={values.id}> {values.id} |  {values.title} </li>
+                        )
+                } )}
+            </ul>;
+        return (
+            renderContent
+        );
     }
 
     renderSquare(i: any) {
@@ -74,6 +101,7 @@ export default Board;
 export interface SquareStateData {
     squareValue: Array<any>;
     xIsNext: boolean,
+    data?: Array<JsonSampleResponse>
 }
 
 
@@ -81,5 +109,11 @@ function FunctionComponentSquare(newProps: any) {
     return (
         <button className="square square--red" onClick={() => newProps.onClick()}> {newProps.values}
         </button>
+    );
+}
+
+function FunctionShowOutput(fetcData: any) {
+    return (
+        <span key={fetcData.id}> showStatus</span>
     );
 }
