@@ -73,16 +73,7 @@ class Board extends React.Component<{}, SquareStateData> {
 
     renderResponse() {
         const renderData = this.state.data;
-        const renderContent = <ul>
-                {renderData && renderData.map( (values:any) => {
-                    return (
-                            <li key={values.id}> {values.id} |  {values.title} </li>
-                        )
-                } )}
-            </ul>;
-        return (
-            renderContent
-        );
+        return <ShowJsonResponse fetchData={renderData} />
     }
 
     renderSquare(i: any) {
@@ -112,8 +103,25 @@ function FunctionComponentSquare(newProps: any) {
     );
 }
 
-function FunctionShowOutput(fetcData: any) {
+function ShowJsonResponse(fetchData: any) {
+    const data = <div className="user-table">
+        <div className="user-table__row">
+            <div> Id</div>
+            <div> Title</div>
+            <div> UserId</div>
+        </div>
+        <div className="user-table__row">
+            {fetchData && fetchData.fetchData.map((values: JsonSampleResponse) => {
+                return <div className="user-table__data">
+                    <div className="user-table__data user-table__data--content"> {values.id} </div>
+                    <div className="user-table__data user-table__data--content"> {values.title} </div>
+                    <div className="user-table__data user-table__data--content"> {values.userId} </div>
+                </div>
+            })
+            }
+        </div>
+    </div>
     return (
-        <span key={fetcData.id}> showStatus</span>
+        <div>{data}</div>
     );
 }
