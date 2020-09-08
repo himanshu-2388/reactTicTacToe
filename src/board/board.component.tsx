@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './board.component.css';
 import Square from '../square/square.component';
 import Axios from 'axios';
 import { JsonSampleResponse } from '../component-one/component-one.interface';
+import { DatastoreService, State, initialState } from '../services/datastore.service';
+import { getDefaultNormalizer } from '@testing-library/react';
+import AppKeyConst from '../utils/App.const';
 
-class Board extends React.Component<{}, SquareStateData> {
+class Board extends Component<{}, SquareStateData> {
     private apiResponseData: Array<JsonSampleResponse> = [];
+    public contextState: State = initialState;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -30,6 +34,18 @@ class Board extends React.Component<{}, SquareStateData> {
     render() {
         return (
             <div>
+                <div className="board">
+                    COSUMER
+                    <div>
+                        <DatastoreService.Consumer>
+                            {context => (
+                                <>
+                                </>
+                            )}
+                        </DatastoreService.Consumer>
+                    </div>
+
+                </div>
                 <div className="board">
                     {this.renderSquare(0)}
                     {this.renderSquare(1)}
@@ -77,7 +93,8 @@ class Board extends React.Component<{}, SquareStateData> {
     }
 
     renderSquare(i: any) {
-        return <Square values={this.state.squareValue[i]} onClick={() => this.handleClick(i)} />;
+        return (
+            <Square values={this.state.squareValue[i]} onClick={() => this.handleClick(i)} />)
     }
 
     renderFuntionCompSquare(i: any) {
@@ -97,9 +114,24 @@ export interface SquareStateData {
 
 
 function FunctionComponentSquare(newProps: any) {
+    const myObj = {
+        data: 'data',
+        testkey: 'testKey',
+        arrValue: [1,2,3,4,5],
+        objValues: { objKey: 'ObjValue'}
+    }
     return (
+        <div>
+        <DatastoreService.Consumer>
+            {context => (
+                <>
+                (FC.Square - {context.getData(AppKeyConst.STORE_KEY_PAGE_1)} )
+                </>
+            )}
+        </DatastoreService.Consumer>
         <button className="square square--red" onClick={() => newProps.onClick()}> {newProps.values}
         </button>
+        </div>
     );
 }
 
@@ -112,7 +144,7 @@ function ShowJsonResponse(fetchData: any) {
         </div>
         <div className="user-table__row">
             {fetchData && fetchData.fetchData.map((values: JsonSampleResponse) => {
-                return <div className="user-table__data">
+                return <div className="user-table__data" key={values.id}>
                     <div className="user-table__data user-table__data--content"> {values.id} </div>
                     <div className="user-table__data user-table__data--content"> {values.title} </div>
                     <div className="user-table__data user-table__data--content"> {values.userId} </div>
@@ -124,4 +156,6 @@ function ShowJsonResponse(fetchData: any) {
     return (
         <div>{data}</div>
     );
+
+
 }
